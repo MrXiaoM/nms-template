@@ -1,0 +1,5 @@
+name: ExamplePlugin
+version: '${version}'
+main: top.mrxiaom.top.mrxiaom.example.ExamplePlugin
+api-version: 1.13
+authors: [ MrXiaoM ]
