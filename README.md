@@ -101,7 +101,7 @@ public void foo() {
 
 如果需要添加类，先在 `shared` 模块添加接口，然后再在所有 `v1_xx_Rx` 子项目中添加实现，最后在 `Versions.java` 中添加版本对应关系、反射初始化实现即可。
 
-有时可能会遇到一些 NMS 方法需要引用 authlib、 datafixer、
+有时可能会遇到一些 NMS 方法需要引用 authlib、brigadier、datafixerupper 之类的（这三个比较常见），不要图方便全用一样的版本，要 Minecraft 版本对应相同的依赖版本才行。否则即使编译成功了，之后执行的时候可能会因为方法签名不一样导致报错。
 
 先下载 `https://bmclapi2.bangbang93.com/version/版本/json` 然后打开（你有客户端的话，打开 `.minecraft/versions/版本/版本.json` 也行），格式化，并且搜索相关依赖。  
 这里以 1.21 为例，搜索 `authlib` 会得到下面这段
