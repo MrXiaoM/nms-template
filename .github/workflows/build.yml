@@ -13,7 +13,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Validate Gradle wrapper
         uses: gradle/actions/wrapper-validation@v4
       - name: Setup Gradle
@@ -29,5 +29,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ExamplePlugin
-          path: build/libs/*.jar
+          path: out/*.jar
           if-no-files-found: error

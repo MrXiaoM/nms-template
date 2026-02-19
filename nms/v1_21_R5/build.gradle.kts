@@ -1,4 +1,4 @@
 setupJava(21)
 dependencies {
-    setupNMS("1.21.4")
+    setupNMS("1.21.8")
 }
