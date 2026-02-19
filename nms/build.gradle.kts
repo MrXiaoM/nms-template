@@ -49,7 +49,7 @@ shared.dependencies {
 }
 subprojects {
     dependencies {
-        if (name.startsWith("v")) add("compileOnly", shared)
+        if (name != "shared") add("compileOnly", shared)
     }
 }
 dependencies {

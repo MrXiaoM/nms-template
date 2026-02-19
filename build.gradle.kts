@@ -1,6 +1,6 @@
 plugins {
     java
-    id("com.github.johnrengelman.shadow") version "7.0.0"
+    id ("com.gradleup.shadow") version "8.3.0"
 }
 
 val targetJavaVersion = 8
@@ -21,17 +21,15 @@ repositories {
 
 // 新建 shadowLink 配置
 configurations.create("shadowLink")
-@Suppress("VulnerableLibrariesLocal")
+
 dependencies {
     compileOnly("org.spigotmc:spigot-api:1.21-R0.1-SNAPSHOT")
-    implementation("org.jetbrains:annotations:24.0.0")
+    compileOnly("org.jetbrains:annotations:24.0.0")
 
     // NMS 接口以及实现
-    for (nms in project.project(":nms").also {
-        implementation(it)
-    }.subprojects) {
+    for (nms in project.project(":nms").subprojects) {
         if (nms.name == "shared") implementation(nms)
-        if (nms.name.startsWith("v")) add("shadowLink", nms)
+        else add("shadowLink", nms)
     }
 }
 java {
@@ -46,15 +44,19 @@ java {
 
 tasks {
     shadowJar {
-        archiveClassifier.set("")
-
         // 添加 shadowLink 配置到打包任务，不在代码进行依赖引用，单纯打包 NMS 实现进去，即可杂交编译目标
         configurations.add(project.configurations.getByName("shadowLink"))
         // 将 top.mrxiaom.example 换成你自己的包
         relocate("nms.impl", "top.mrxiaom.example.nms")
     }
-    build {
+    val copyTask = create<Copy>("copyBuildArtifact") {
         dependsOn(shadowJar)
+        from(shadowJar.get().outputs)
+        rename { "${project.name}-$version.jar" }
+        into(rootProject.file("out"))
+    }
+    build {
+        dependsOn(copyTask)
     }
 
     withType<JavaCompile>().configureEach {
