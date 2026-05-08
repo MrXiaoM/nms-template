@@ -1,6 +1,6 @@
 plugins {
     java
-    id ("com.gradleup.shadow") version "8.3.0"
+    id ("com.gradleup.shadow") version "9.3.0"
 }
 
 val targetJavaVersion = 8
@@ -46,13 +46,16 @@ tasks {
     shadowJar {
         // 添加 shadowLink 配置到打包任务，不在代码进行依赖引用，单纯打包 NMS 实现进去，即可杂交编译目标
         configurations.add(project.configurations.getByName("shadowLink"))
+        // shadowJar 新版本需要手动添加需要打包的配置
+        configurations.add(project.configurations.runtimeClasspath.get())
         // 将 top.mrxiaom.example 换成你自己的包
         relocate("nms.impl", "top.mrxiaom.example.nms")
     }
-    val copyTask = create<Copy>("copyBuildArtifact") {
+    val jarName = "${project.name}-$version.jar"
+    val copyTask = register<Copy>("copyBuildArtifact") {
         dependsOn(shadowJar)
         from(shadowJar.get().outputs)
-        rename { "${project.name}-$version.jar" }
+        rename { jarName }
         into(rootProject.file("out"))
     }
     build {
