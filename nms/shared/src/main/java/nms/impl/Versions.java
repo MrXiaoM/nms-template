@@ -51,6 +51,7 @@ public class Versions {
         put("1.21.9", "v1_21_R6");
         put("1.21.10", "v1_21_R6");
         put("1.21.11", "v1_21_R7");
+        put("26.1", "v26_1");
     }};
 
     public static boolean isLoaded() {
@@ -78,7 +79,7 @@ public class Versions {
             } catch (Throwable e) {
                 String bukkit = Bukkit.getServer().getBukkitVersion();
                 int index = bukkit.indexOf('-');
-                String ver = index > 4 ? bukkit.substring(0, index) : bukkit;
+                String ver = index != -1 ? bukkit.substring(0, index) : bukkit;
                 nmsVersion = VERSION_TO_REVISION.getOrDefault(ver, "unknown");
                 logger.info("Found Minecraft: " + ver + " (" + nmsVersion + ")! Trying to find NMS support");
             }
