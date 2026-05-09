@@ -5,7 +5,7 @@ plugins {
 
 val targetJavaVersion = 8
 val source = NMSSource.RoseWoodDev
-val sharedSpigotAPI = "1.21"
+val sharedPaperAPI = "1.21"
 
 // ==========================
 
@@ -27,6 +27,7 @@ subprojects {
     }
     extra.func<Project, Int>("setupJava") { proj, javaVer ->
         proj.extensions.configure(JavaPluginExtension::class) {
+            disableAutoTargetJvm()
             val ver = JavaVersion.toVersion(javaVer)
             if (JavaVersion.current() < ver) {
                 val lang = JavaLanguageVersion.of(javaVer)
@@ -45,7 +46,7 @@ subprojects {
 }
 val shared = project("shared")
 shared.dependencies {
-    add("compileOnly", "org.spigotmc:spigot-api:$sharedSpigotAPI-R0.1-SNAPSHOT")
+    add("compileOnly", "io.papermc.paper:paper-api:$sharedPaperAPI-R0.1-SNAPSHOT")
 }
 subprojects {
     dependencies {

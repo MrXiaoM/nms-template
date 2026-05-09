@@ -1,7 +1,6 @@
 package nms.impl;
 
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Item;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -23,13 +22,20 @@ public class Versions {
      * 根据 NMS 版本，反射读取各个实现类
      */
     private static void load(String nmsVersion) throws Throwable {
-        String pkg = Versions.class.getPackage().getName() + "." + nmsVersion;
-        nmsItemAdapter = newInstance(pkg, "ItemAdapterImpl");
+        String basePkg = Versions.class.getPackage().getName();
+        String pkg = basePkg + "." + nmsVersion;
+        String paperPkg = basePkg + ".paper";
+        if (paper) {
+            nmsItemAdapter = newInstance(paperPkg, "ItemAdapterImpl");
+        } else {
+            nmsItemAdapter = newInstance(pkg, "ItemAdapterImpl");
+        }
     }
 
     // ================================================
 
     private static boolean loaded = false;
+    private static boolean paper = false;
     // 1.20+ paper remapping org.bukkit.craftbukkit.v1_xx_Rx
     private static final Map<String, String> VERSION_TO_REVISION = new HashMap<String, String>() {{
         put("1.20", "v1_20_R1");
@@ -51,24 +57,29 @@ public class Versions {
         put("1.21.9", "v1_21_R6");
         put("1.21.10", "v1_21_R6");
         put("1.21.11", "v1_21_R7");
+        put("26.1", "v26_1");
+        put("26.1.1", "v26_1");
+        put("26.1.2", "v26_1");
     }};
 
     public static boolean isLoaded() {
         return loaded;
     }
 
+    public static boolean isPaper() {
+        return paper;
+    }
+
     @SuppressWarnings("UnusedReturnValue")
     public static boolean init(Logger logger) {
         if (loaded) return true;
-        String nmsVersion = null;
+        String nmsVersion;
         try {
-            // noinspection JavaReflectionMemberAccess
-            Item.class.getDeclaredMethod("getHealth");
-            nmsVersion = "paper";
-            logger.info("Found Minecraft: " + nmsVersion + "! Trying to find NMS support");
-        } catch (ReflectiveOperationException ignored) {
-        }
-        if (nmsVersion == null) {
+            String ver = Bukkit.getServer().getMinecraftVersion();
+            nmsVersion = VERSION_TO_REVISION.getOrDefault(ver, "unknown");
+            logger.info("Found Minecraft: " + ver + " (Paper, " + nmsVersion + ")! Trying to find NMS support");
+            paper = true;
+        } catch (LinkageError ignored) {
             // Thanks https://github.com/tr7zw/Item-NBT-API - MIT License
             try {
                 String pkg = Bukkit.getServer().getClass().getPackage().getName();
@@ -78,7 +89,7 @@ public class Versions {
             } catch (Throwable e) {
                 String bukkit = Bukkit.getServer().getBukkitVersion();
                 int index = bukkit.indexOf('-');
-                String ver = index > 4 ? bukkit.substring(0, index) : bukkit;
+                String ver = index != -1 ? bukkit.substring(0, index) : bukkit;
                 nmsVersion = VERSION_TO_REVISION.getOrDefault(ver, "unknown");
                 logger.info("Found Minecraft: " + ver + " (" + nmsVersion + ")! Trying to find NMS support");
             }
